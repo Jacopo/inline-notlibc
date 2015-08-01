@@ -1,6 +1,7 @@
 #pragma once
 
-/* Should define syscallN() with the correct argument type */
+/* Should define syscallN() with the correct argument type
+ * Also (ab)used to #define PAGE_SIZE */
 
 #if defined(__i386__)
 #   include "x86/syscall.h"

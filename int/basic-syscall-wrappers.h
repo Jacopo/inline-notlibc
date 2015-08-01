@@ -42,12 +42,21 @@ static inline int open(const char *pathname, int flags, ...)
 
 /* "Cheat" with shorter assembly when possible.
  * Also, syscalls with six arguments are not actually implemented yet :) */
+#ifdef __NR_mmap2
+#define __NR_mmap_registers __NR_mmap2 /* The "modern" version. Takes offset in pages. */
+#else
+#define __NR_mmap_registers __NR_mmap
+#endif
 static inline void* mmap(void *addr, size_t length, int prot, int flags, int fd, off_t offset)
 {
     if ((fd == -1) || ((flags & MAP_ANONYMOUS) == MAP_ANONYMOUS))
-        return (void*) syscall6_negone5_zero6(__NR_mmap, (syscall_arg_t) addr, (syscall_arg_t) length, (syscall_arg_t) prot, (syscall_arg_t) flags);
-    else return (void*) syscall6(__NR_mmap, (syscall_arg_t) addr, (syscall_arg_t) length, (syscall_arg_t) prot, (syscall_arg_t) flags, (syscall_arg_t) fd, (syscall_arg_t) offset);
+        return (void*) syscall6_negone5_zero6(__NR_mmap_registers, (syscall_arg_t) addr, (syscall_arg_t) length, (syscall_arg_t) prot, (syscall_arg_t) flags);
+
+    // TODO: verify the offset adjustment is correct
+#ifdef __NR_mmap2
+    offset /= PAGE_SIZE;
+#endif
+    return (void*) syscall6(__NR_mmap_registers, (syscall_arg_t) addr, (syscall_arg_t) length, (syscall_arg_t) prot, (syscall_arg_t) flags, (syscall_arg_t) fd, (syscall_arg_t) offset);
 }
-// TODO: real_mmap (Note: may have to use mmap2)
 
 #define MAP_FAILED ((void*) -1)

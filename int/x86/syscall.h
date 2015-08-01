@@ -1,5 +1,7 @@
 #pragma once
 
+#define PAGE_SIZE 4096u
+
 /* Uses the int80 interface by default.
  * Tries to keep the code very short, very close to what one would write
  * if doing this in assembly.
