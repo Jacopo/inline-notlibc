@@ -77,7 +77,7 @@ int printf(const char *fmt, ...)
                 {
                     const char *s = va_arg(ap, char*);
                     V((flags == 0) && (field_width == 0) && (lenmod == 0));
-                    puts(s);
+                    print(s);
                 }
                 break;
 
@@ -164,7 +164,7 @@ int printf(const char *fmt, ...)
                         assert(strlen(&buf[print_i]) == field_width);
                     }
 
-                    puts(&buf[print_i]);
+                    print(&buf[print_i]);
                 }
                 break;
 
