@@ -32,7 +32,7 @@ static inline int open(const char *pathname, int flags, ...)
     if (((flags & O_CREAT) == O_CREAT) || ((flags & O_TMPFILE) == O_TMPFILE)) {
         va_list ap;
         va_start(ap, flags);
-        mode = va_arg(ap, mode_t);
+        mode = va_arg(ap, int); // Not mode_t, due to integer promotion
         va_end(ap);
     }
 
