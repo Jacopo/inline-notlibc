@@ -64,6 +64,24 @@ DIRECT_SYSCALL_ATTRS long int80_syscall3(uint32_t n, uint32_t p1, uint32_t p2, u
     return eax;
 }
 
+DIRECT_SYSCALL_ATTRS long int80_syscall4(uint32_t n, uint32_t p1, uint32_t p2, uint32_t p3, uint32_t p4)
+{
+    uint32_t eax = n;
+#if defined(__i386__) && defined(__PIC__)
+    /* Preserve EBX: used for PIC */
+    uint32_t for_ebx = p1;
+    __asm__ __volatile__(
+        "push %%ebx"                 "\n\t"\
+        "mov %[for_ebx],%%ebx"       "\n\t"\
+        "int $0x80"                  "\n\t"\
+        "pop %%ebx"                  "\n\t"\
+        : "=a"(eax) : "0"(eax), [for_ebx]"ir"(for_ebx), "c"(p2), "d"(p3) : "memory");
+#else
+    __asm__ __volatile__("int $0x80" : "=a"(eax) : "0"(eax), "b"(p1), "c"(p2), "d"(p3), "S"(p4) : "memory");
+#endif
+    return eax;
+}
+
 DIRECT_SYSCALL_ATTRS long int80_syscall5_zero5(uint32_t n, uint32_t p1, uint32_t p2, uint32_t p3, uint32_t p4)
 {
     uint32_t eax = n;

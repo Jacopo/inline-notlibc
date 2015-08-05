@@ -15,10 +15,9 @@
  * Note that there is no errno, just return values. Use VS() to simulate that.
  * For instance, 'if (xxx() == -1) err(109, "Failed xxx()")' should become 'VS(xxx())'.
  *
- * To use it, include this file instead of libc and compile with -nostdlib
- * and -nostdinc.
+ * To use it, include this file instead of libc and compile with -nostdlib.
  * It should not be necessary to use -ffreestanding (it would also disable GCC builtins).
- * You will need your target linux-libc-dev (the uapi/xxx headers).
+ * You will need your target's linux-libc-dev (the uapi/xxx headers).
  */
 
 #pragma once
@@ -54,6 +53,7 @@ typedef __kernel_uid32_t        uid_t;
 typedef __kernel_gid32_t        gid_t;
 typedef __kernel_uid16_t        uid16_t;
 typedef __kernel_gid16_t        gid16_t;
+typedef unsigned long           nfds_t;
 
 /* Some defines are still missing.
  * Shameless copy from include/linux/kernel.h */
@@ -80,13 +80,40 @@ typedef __kernel_clock_t        clock_t;
 
 
 /* Linux headers useful for syscalls & co. */
+#include <linux/acct.h>
+#include <linux/audit.h>
+#include <linux/auxvec.h>
+#include <linux/bpf.h>
 #include <linux/fcntl.h>
+#include <linux/in.h>
+#include <linux/ioctl.h>
+#include <linux/ip.h>
+#include <linux/ipc.h>
+#include <linux/inotify.h>
+#include <linux/filter.h>
+#include <linux/kernel.h>
 #include <linux/mman.h>
+#include <linux/net.h>
+#include <linux/param.h>
+#include <linux/personality.h>
+#include <linux/poll.h>
 #include <linux/prctl.h>
+#include <linux/ptrace.h>
+#include <linux/random.h>
 #include <linux/resource.h>
+#include <linux/seccomp.h>
+#include <linux/sem.h>
 #include <linux/signal.h>
+#include <linux/signalfd.h>
+#include <linux/sched.h>
+#include <linux/stat.h>
+#include <linux/tcp.h>
+#include <linux/uio.h>
+#include <linux/udp.h>
+#include <linux/un.h>
 #include <linux/unistd.h> /* __NR_syscall_name */
 #include <asm/sigcontext.h>
+#include <asm/stat.h>
 #include <asm/ucontext.h>
 
 

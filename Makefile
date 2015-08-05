@@ -6,6 +6,8 @@ CFLAGS += --std=gnu99 -fno-stack-protector -nostdlib
 CFLAGS += -m32
 
 all: test
+test: test.c *.h int/*.h int/x86/*.h
+	$(CC) $(CPPFLAGS) $(CFLAGS) -o $@ $< $(LDFLAGS)
 
 .PHONY: clean all
 clean:
