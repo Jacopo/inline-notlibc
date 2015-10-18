@@ -84,9 +84,15 @@ int printf(const char *fmt, ...)
             case 'p':
                 V((flags == 0) && (field_width == 0) && (lenmod == 0));
                 /* I prefer the 0x%08x form */
-                static_assert(sizeof(void*) == sizeof(unsigned int), "TODO: 64-bit");
                 putchar('0'); putchar('x');
-                flags = ZEROPAD; field_width = 8; spec = 'x';
+                flags = ZEROPAD; spec = 'x';
+#ifdef __LP64__
+                static_assert(sizeof(void*) == sizeof(uint64_t), "Weird arch?");
+                field_width = 16;
+#else
+                static_assert(sizeof(void*) == sizeof(uint32_t), "Weird arch?");
+                field_width = 8;
+#endif
                 /* Fall through ... */
 
             case 'd':

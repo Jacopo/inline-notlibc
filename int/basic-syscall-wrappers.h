@@ -102,7 +102,6 @@ WRAPPER2(int, clock_getres, clockid_t, struct timespec*)
 WRAPPER4(int, clock_nanosleep, clockid_t, int, const struct timespec*, struct timespec *);
 WRAPPER4(ssize_t, tee, int, int, size_t, unsigned int)
 WRAPPER3(int, dup3, int, int, int)
-WRAPPER3(int, sigaction, int, struct sigaction *, struct sigaction *)
 WRAPPER2(int, sigaltstack, stack_t *, stack_t *)
 #undef WRAPPER0
 #undef WRAPPER1
@@ -154,4 +153,27 @@ static inline int pipe(int pipefd[2])
 static inline int pipe2(int pipefd[2], int flags)
 {
     return (int) syscall2(__NR_pipe2, (syscall_arg_t) pipefd, (syscall_arg_t) flags);
+}
+
+
+static inline int rt_sigaction(int signum, struct sigaction *act, struct sigaction *oldact); // They use each other
+static inline int sigaction(int signum, struct sigaction *act, struct sigaction *oldact)
+{
+#ifdef __NR_sigaction
+    return (int) syscall3(__NR_sigaction, (syscall_arg_t) signum, (syscall_arg_t) act, (syscall_arg_t) oldact);
+#else
+    return rt_sigaction(signum, act, oldact);
+#endif
+}
+
+static inline int rt_sigaction(int signum, struct sigaction *act, struct sigaction *oldact)
+{
+#ifdef __i386__
+    // There seems to be weird stuff going on here
+    // i386 user signal.h mentions it "must cater to libcs that poke about in kernel headers", and seems to simply have the wrong structure defined
+    // Let's use the legacy one, seems to work fine
+    return sigaction(signum, act, oldact);
+#else
+    return (int) syscall3(__NR_rt_sigaction, (syscall_arg_t) signum, (syscall_arg_t) act, (syscall_arg_t) oldact);
+#endif
 }
